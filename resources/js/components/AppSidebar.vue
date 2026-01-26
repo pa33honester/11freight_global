@@ -51,7 +51,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Containers',
-        href: '/admin/containers',
+        href: '/containers',
         icon: Box,
     },
     {
