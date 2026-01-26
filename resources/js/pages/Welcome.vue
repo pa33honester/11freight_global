@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import forklift from '@/images/forklift.svg';
-import inventoryList from '@/images/inventory-list.svg';
-import warehouseShelves from '@/images/warehouse-shelves.svg';
+// right-side illustration replaced by public logo.jpeg
 import { dashboard, login, register } from '@/routes';
 
 withDefaults(
@@ -60,7 +58,7 @@ withDefaults(
                 <div
                     class="flex-1 rounded-br-lg rounded-bl-lg bg-white p-6 pb-12 text-[13px] leading-[20px] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-tl-lg lg:rounded-br-none lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
                 >
-                    <h1 class="mb-1 font-medium">Welcome to Warehouse Manager</h1>
+                    <h1 class="mb-1 font-medium">Welcome to 11 Freight Global</h1>
                     <p class="mb-2 text-[#706f6c] dark:text-[#A1A09A]">
                         Manage inventory, locations, and warehouse operations from one central place.
                     </p>
@@ -94,25 +92,8 @@ withDefaults(
                 <div
                     class="relative -mb-px aspect-335/376 w-full shrink-0 overflow-hidden rounded-t-lg bg-[#fff2f2] lg:mb-0 lg:-ml-px lg:aspect-auto lg:w-[438px] lg:rounded-t-none lg:rounded-r-lg dark:bg-[#1D0002]"
                 >
-                    <div class="rounded-lg bg-white p-6 dark:bg-[#161615]">
-                        <h2 class="mb-3 text-lg font-semibold">Warehouse Inventory</h2>
-                        <p class="mb-4 text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                            Key warehouse activities: shelving, handling and keeping accurate inventory records.
-                        </p>
-                        <div class="grid gap-4 sm:grid-cols-3">
-                            <figure class="flex flex-col items-center gap-2 rounded-md border p-3">
-                                <img :src="warehouseShelves" alt="Shelving" class="h-20 w-full object-contain" />
-                                <figcaption class="text-sm">Shelving & Storage</figcaption>
-                            </figure>
-                            <figure class="flex flex-col items-center gap-2 rounded-md border p-3">
-                                <img :src="forklift" alt="Forklift" class="h-20 w-full object-contain" />
-                                <figcaption class="text-sm">Material Handling</figcaption>
-                            </figure>
-                            <figure class="flex flex-col items-center gap-2 rounded-md border p-3">
-                                <img :src="inventoryList" alt="Inventory list" class="h-20 w-full object-contain" />
-                                <figcaption class="text-sm">Inventory Tracking</figcaption>
-                            </figure>
-                        </div>
+                    <div class="flex h-full items-center justify-center rounded-lg bg-white p-0 dark:bg-[#161615]">
+                        <img src="/logo.jpeg" alt="Logo" class="w-full h-full object-cover" />
                     </div>
                     <div
                         class="absolute inset-0 rounded-t-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:overflow-hidden lg:rounded-t-none lg:rounded-r-lg dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"
