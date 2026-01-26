@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import {
-    BookOpen,
-    Folder,
     LayoutGrid,
     Users,
     Truck,
@@ -38,7 +36,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Customers',
-        href: '/admin/customers',
+        href: '/customers',
         icon: Users,
     },
     {
@@ -84,16 +82,7 @@ const mainNavItems: NavItem[] = [
 ];
 
 const footerNavItems: NavItem[] = [
-    {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
+
 ];
 </script>
 
