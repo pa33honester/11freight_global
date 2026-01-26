@@ -55,14 +55,14 @@ const mainNavItems: NavItem[] = [
         icon: Archive,
     },
     {
+        title: 'Receipts',
+        href: '/receipts',
+        icon: FileText,
+    },
+    {
         title: 'Containers',
         href: '/containers',
         icon: Box,
-    },
-    {
-        title: 'Pay Suppliers',
-        href: '/admin/pay-suppliers',
-        icon: CreditCard,
     },
     {
         title: 'Staff & Roles',
@@ -73,11 +73,6 @@ const mainNavItems: NavItem[] = [
         title: 'WhatsApp Conversations',
         href: '/admin/whatsapp-conversations',
         icon: MessageCircle,
-    },
-    {
-        title: 'Receipts',
-        href: '/admin/receipts',
-        icon: FileText,
     },
     {
         title: 'Audit Logs',

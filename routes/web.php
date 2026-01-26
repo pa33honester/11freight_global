@@ -24,6 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('containers', ContainerController::class);
     Route::resource('warehouse-inventory', WarehouseInventoryController::class);
     Route::resource('payments', App\Http\Controllers\PaymentController::class);
+    Route::resource('receipts', App\Http\Controllers\ReceiptController::class)->only(['index','create','store','show']);
 });
 
 require __DIR__.'/settings.php';
