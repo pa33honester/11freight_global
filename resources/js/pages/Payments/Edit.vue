@@ -13,6 +13,7 @@ import {
     DialogFooter,
     DialogClose,
 } from '@/components/ui/dialog';
+// using native select elements
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -42,6 +43,8 @@ const confirmSubmit = async () => {
     submitting.value = false;
     confirmOpen.value = false;
 };
+
+// native select will be used in template
 </script>
 
 <template>

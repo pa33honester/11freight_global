@@ -10,6 +10,7 @@ import {
     CardContent,
     CardFooter,
 } from '@/components/ui/card';
+// native select used for accessibility and simplicity
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -37,6 +38,8 @@ const form = useForm({
     shelf_code: '',
     status: 'RECEIVED',
 });
+
+// use native <select> bound with v-model.number in the template
 
 const clientErrors = reactive<Record<string, string>>({});
 
@@ -103,9 +106,10 @@ const submit = () => {
 
                         <div class="space-y-2">
                             <Label for="customer_id">Customer</Label>
-                            <select id="customer_id" v-model.number="form.customer_id" class="w-full rounded border p-2" :class="{ 'border-destructive': clientErrors.customer_id || form.errors.customer_id }">
-                                <option v-for="c in props.customers" :key="c.id" :value="c.id">{{ c.full_name }}</option>
-                            </select>
+                                <select id="customer_id" v-model.number="form.customer_id" class="w-full rounded border px-3 py-2">
+                                    <option value="">Select customer</option>
+                                    <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.full_name }}</option>
+                                </select>
                             <p v-if="clientErrors.customer_id || form.errors.customer_id" class="text-sm text-destructive">{{ clientErrors.customer_id || form.errors.customer_id }}</p>
                         </div>
 

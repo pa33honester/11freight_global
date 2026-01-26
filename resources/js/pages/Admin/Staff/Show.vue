@@ -4,6 +4,7 @@ import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
 
@@ -47,12 +48,22 @@ function createRole() {
             try {
                 const j = await err.json();
                 if (j?.message) msg = j.message;
-            } catch (_) {}
+            } catch (e) {
+                console.log(e);
+            }
             alert(msg);
         })
         .finally(() => {
             creating.value = false;
         });
+}
+
+function toggleRole(name: string, checked: boolean) {
+    if (checked) {
+        if (!form.roles.includes(name)) form.roles.push(name)
+        return
+    }
+    form.roles = (form.roles as string[]).filter((r) => r !== name)
 }
 </script>
 
@@ -70,8 +81,8 @@ function createRole() {
                         <h3 class="font-medium">Roles</h3>
                         <div class="space-y-2 mt-2">
                             <div v-for="r in rolesLocal" :key="r.id" class="flex items-center gap-2">
-                                <input type="checkbox" :value="r.name" v-model="form.roles" />
-                                <label>{{ r.name }}</label>
+                                <Checkbox :id="`role-${r.id}`" :modelValue="(form.roles || []).includes(r.name)" @update:modelValue="(v) => toggleRole(r.name, !!v)" />
+                                <label :for="`role-${r.id}`">{{ r.name }}</label>
                             </div>
                         </div>
                     </div>
@@ -85,7 +96,7 @@ function createRole() {
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <Button @click.prevent="submit">Save Roles</Button>
+                        <Button :disabled="form.processing" @click.prevent="submit">Save Roles</Button>
                         <Link href="/admin/staff"><Button variant="ghost">Back</Button></Link>
                     </div>
                 </CardContent>

@@ -6,6 +6,7 @@ import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
 import AlertError from '@/components/AlertError.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
     Dialog,
     DialogContent,
@@ -213,8 +214,7 @@ watch(
                                     <Spinner />
                                 </div>
                                 <template v-else>
-                                    <input
-                                        type="text"
+                                    <Input
                                         readonly
                                         :value="manualSetupKey"
                                         class="h-full w-full bg-background p-3 text-foreground"

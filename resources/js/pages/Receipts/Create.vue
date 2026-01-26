@@ -8,7 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 
-const form = useForm({ receipt_number: '', type: 'PR', linked_id: '' });
+const form = useForm({
+    receipt_number: '',
+    type: 'INVOICE',
+    linked_id: '',
+});
+
 const submitting = ref(false);
 
 const submit = async () => {
@@ -20,10 +25,12 @@ const submit = async () => {
 
 <template>
     <Head title="Create Receipt" />
-    <AppLayout :breadcrumbs="[{ title: 'Receipts', href: '/receipts' }, { title: 'Create' }]">
+    <AppLayout :breadcrumbs="[{ title: 'Receipts', href: '/receipts' }, { title: 'Create', href: '/receipts/create' }]">
         <div class="p-4">
-            <Card>
-                <CardHeader><CardTitle>Create Receipt</CardTitle></CardHeader>
+            <Card class="max-w-2xl">
+                <CardHeader>
+                    <CardTitle>Create Receipt</CardTitle>
+                </CardHeader>
                 <CardContent>
                     <div class="grid gap-4">
                         <div>

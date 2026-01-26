@@ -37,11 +37,11 @@ function destroy(id: number) {
                     </div>
 
                     <ul>
-                        <li v-for="r in roles" :key="r.id" class="flex items-center justify-between py-2">
+                        <li v-for="r in props.roles" :key="r.id" class="flex items-center justify-between py-2">
                             <div>{{ r.name }}</div>
                             <div><button class="btn btn-sm" @click.prevent="destroy(r.id)">Delete</button></div>
                         </li>
-                        <li v-if="roles.length === 0" class="text-muted-foreground">No roles yet.</li>
+                        <li v-if="props.roles.length === 0" class="text-muted-foreground">No roles yet.</li>
                     </ul>
                 </CardContent>
             </Card>
