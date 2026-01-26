@@ -16,12 +16,12 @@ const props = defineProps<{ log: any }>();
 
       <div class="mt-4">
         <h3 class="font-medium">Old Data</h3>
-        <pre class="text-sm bg-gray-100 p-2 rounded">{{ JSON.stringify(props.log.old_data, null, 2) }}</pre>
+        <div class="text-sm font-mono bg-gray-100 dark:bg-gray-800 p-2 rounded whitespace-pre-wrap break-words">{{ JSON.stringify(props.log.old_data, null, 2) }}</div>
       </div>
 
       <div class="mt-4">
         <h3 class="font-medium">New Data</h3>
-        <pre class="text-sm bg-gray-100 p-2 rounded">{{ JSON.stringify(props.log.new_data, null, 2) }}</pre>
+        <div class="text-sm font-mono bg-gray-100 dark:bg-gray-800 p-2 rounded whitespace-pre-wrap break-words">{{ JSON.stringify(props.log.new_data, null, 2) }}</div>
       </div>
 
       <div class="mt-4">
