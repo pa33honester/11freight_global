@@ -1,0 +1,124 @@
+<script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
+import {
+    BookOpen,
+    Folder,
+    LayoutGrid,
+    Users,
+    Truck,
+    Archive,
+    Box,
+    CreditCard,
+    UserCheck,
+    MessageCircle,
+    FileText,
+    Clipboard,
+} from 'lucide-vue-next';
+import NavFooter from '@/components/NavFooter.vue';
+import NavMain from '@/components/NavMain.vue';
+import NavUser from '@/components/NavUser.vue';
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from '@/components/ui/sidebar';
+import { dashboard } from '@/routes';
+import { type NavItem } from '@/types';
+import AppLogo from './AppLogo.vue';
+
+const mainNavItems: NavItem[] = [
+    {
+        title: 'Dashboard',
+        href: dashboard(),
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Customers',
+        href: '/admin/customers',
+        icon: Users,
+    },
+    {
+        title: 'Shipments',
+        href: '/admin/shipments',
+        icon: Truck,
+    },
+    {
+        title: 'Warehouse Inventory',
+        href: '/admin/warehouse-inventory',
+        icon: Archive,
+    },
+    {
+        title: 'Containers',
+        href: '/admin/containers',
+        icon: Box,
+    },
+    {
+        title: 'Pay Suppliers',
+        href: '/admin/pay-suppliers',
+        icon: CreditCard,
+    },
+    {
+        title: 'Staff & Roles',
+        href: '/admin/staff',
+        icon: UserCheck,
+    },
+    {
+        title: 'WhatsApp Conversations',
+        href: '/admin/whatsapp-conversations',
+        icon: MessageCircle,
+    },
+    {
+        title: 'Receipts',
+        href: '/admin/receipts',
+        icon: FileText,
+    },
+    {
+        title: 'Audit Logs',
+        href: '/admin/audit-logs',
+        icon: Clipboard,
+    },
+];
+
+const footerNavItems: NavItem[] = [
+    {
+        title: 'Github Repo',
+        href: 'https://github.com/laravel/vue-starter-kit',
+        icon: Folder,
+    },
+    {
+        title: 'Documentation',
+        href: 'https://laravel.com/docs/starter-kits#vue',
+        icon: BookOpen,
+    },
+];
+</script>
+
+<template>
+    <Sidebar collapsible="icon" variant="inset">
+        <SidebarHeader>
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton size="lg" as-child>
+                        <Link :href="dashboard()">
+                            <AppLogo />
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+        </SidebarHeader>
+
+        <SidebarContent>
+            <NavMain :items="mainNavItems" />
+        </SidebarContent>
+
+        <SidebarFooter>
+            <NavFooter :items="footerNavItems" />
+            <NavUser />
+        </SidebarFooter>
+    </Sidebar>
+    <slot />
+</template>
