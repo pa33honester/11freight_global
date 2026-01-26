@@ -21,6 +21,15 @@ class Receipt extends Model
         'created_at',
     ];
 
+    /**
+     * Exclude large or sensitive fields from audit logs.
+     *
+     * @var array<string>
+     */
+    protected array $auditExclude = [
+        'qr_code',
+    ];
+
     public static function types(): array
     {
         return ['PR','WR','SR','AR','DR','SS'];

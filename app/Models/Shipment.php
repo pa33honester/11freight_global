@@ -7,6 +7,7 @@ use App\Models\Customer;
 
 class Shipment extends Model
 {
+    use \App\Traits\Auditable;
     protected $fillable = [
         'shipment_code',
         'customer_id',
@@ -20,4 +21,11 @@ class Shipment extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    /**
+     * Fields to exclude from audit logs for shipments.
+     *
+     * @var array<string>
+     */
+    protected array $auditExclude = [];
 }

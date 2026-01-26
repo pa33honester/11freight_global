@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\Auditable;
 
     protected $table = 'payments';
 
@@ -21,6 +21,13 @@ class Payment extends Model
         'approved_by',
         'created_at',
     ];
+
+    /**
+     * Fields to exclude from audit logs for payments.
+     *
+     * @var array<string>
+     */
+    protected array $auditExclude = [];
 
     public function customer()
     {

@@ -31,6 +31,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('admin/roles', [App\Http\Controllers\RoleController::class, 'index'])->name('admin.roles.index');
     Route::post('admin/roles', [App\Http\Controllers\RoleController::class, 'store'])->name('admin.roles.store');
     Route::delete('admin/roles/{id}', [App\Http\Controllers\RoleController::class, 'destroy'])->name('admin.roles.destroy');
+    // Audit logs
+    Route::get('admin/audit-logs', [App\Http\Controllers\AuditLogController::class, 'index'])->name('admin.audit.index');
+    Route::get('admin/audit-logs/{id}', [App\Http\Controllers\AuditLogController::class, 'show'])->name('admin.audit.show');
+    Route::post('audit-logs', [App\Http\Controllers\AuditLogController::class, 'store'])->name('audit.store');
 });
 
 require __DIR__.'/settings.php';

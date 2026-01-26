@@ -9,6 +9,7 @@ use App\Models\User;
 
 class WarehouseInventory extends Model
 {
+    use \App\Traits\Auditable;
     protected $table = 'warehouse_inventory';
 
     protected $fillable = [
@@ -39,4 +40,13 @@ class WarehouseInventory extends Model
 
         return Storage::url($this->photo_path);
     }
+
+    /**
+     * Fields to exclude from audit logs for warehouse inventory.
+     *
+     * @var array<string>
+     */
+    protected array $auditExclude = [
+        'photo_path',
+    ];
 }
