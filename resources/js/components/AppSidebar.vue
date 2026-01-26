@@ -40,6 +40,11 @@ const mainNavItems: NavItem[] = [
         icon: Users,
     },
     {
+        title: 'Payments',
+        href: '/payments',
+        icon: CreditCard,
+    },
+    {
         title: 'Shipments',
         href: '/shipments',
         icon: Truck,
