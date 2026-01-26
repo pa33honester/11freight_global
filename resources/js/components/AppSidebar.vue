@@ -46,7 +46,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Warehouse Inventory',
-        href: '/admin/warehouse-inventory',
+        href: '/warehouse-inventory',
         icon: Archive,
     },
     {
