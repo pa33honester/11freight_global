@@ -41,7 +41,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Shipments',
-        href: '/admin/shipments',
+        href: '/shipments',
         icon: Truck,
     },
     {

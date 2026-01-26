@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ShipmentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -17,6 +18,7 @@ Route::get('dashboard', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('customers', CustomerController::class);
+    Route::resource('shipments', ShipmentController::class);
 });
 
 require __DIR__.'/settings.php';
