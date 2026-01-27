@@ -4,13 +4,13 @@ import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
 
 const props = defineProps<{ user: any, roles: any }>();
-const selected = ref<string[]>(props.user.role_names ? props.user.role_names : []);
-const form = useForm({ roles: selected.value });
+// single selected role — default to first existing role if present
+const selectedSingle = ref<string>(props.user.role_names && props.user.role_names.length ? props.user.role_names[0] : '');
+const form = useForm({ roles: selectedSingle.value ? [selectedSingle.value] : [] });
 
 const roleForm = useForm({ name: '' });
 const creating = ref(false);
@@ -37,11 +37,12 @@ function createRole() {
     })
         .then(async (res) => {
             if (!res.ok) throw res;
-            const role = await res.json();
-            // append to local roles and select it
-            rolesLocal.value.push(role);
-            if (!form.roles.includes(role.name)) form.roles.push(role.name);
-            roleForm.name = '';
+                    const role = await res.json();
+                    // append to local roles and select it (single role)
+                    rolesLocal.value.push(role);
+                    form.roles = [role.name];
+                    selectedSingle.value = role.name;
+                    roleForm.name = '';
         })
         .catch(async (err) => {
             let msg = 'Failed to create role.';
@@ -58,12 +59,9 @@ function createRole() {
         });
 }
 
-function toggleRole(name: string, checked: boolean) {
-    if (checked) {
-        if (!form.roles.includes(name)) form.roles.push(name)
-        return
-    }
-    form.roles = (form.roles as string[]).filter((r) => r !== name)
+function setRole(name: string) {
+    selectedSingle.value = name;
+    form.roles = [name];
 }
 </script>
 
@@ -81,7 +79,14 @@ function toggleRole(name: string, checked: boolean) {
                         <h3 class="font-medium">Roles</h3>
                         <div class="space-y-2 mt-2">
                             <div v-for="r in rolesLocal" :key="r.id" class="flex items-center gap-2">
-                                <Checkbox :id="`role-${r.id}`" :modelValue="(form.roles || []).includes(r.name)" @update:modelValue="(v) => toggleRole(r.name, !!v)" />
+                                <input
+                                    type="radio"
+                                    :id="`role-${r.id}`"
+                                    :value="r.name"
+                                    v-model="selectedSingle"
+                                    @change="() => setRole(r.name)"
+                                    class="form-radio"
+                                />
                                 <label :for="`role-${r.id}`">{{ r.name }}</label>
                             </div>
                         </div>

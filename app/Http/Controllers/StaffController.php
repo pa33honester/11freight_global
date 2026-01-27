@@ -41,7 +41,10 @@ class StaffController extends Controller
 
     public function updateRoles(Request $request, $id)
     {
-        $request->validate(['roles' => 'array']);
+        $request->validate([
+            'roles' => 'required|array|size:1',
+            'roles.*' => 'string|exists:roles,name',
+        ]);
         $roles = $request->input('roles', []);
 
         $user = User::findOrFail($id);

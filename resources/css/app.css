@@ -170,3 +170,16 @@
         @apply bg-background text-foreground;
     }
 }
+
+/* Ensure select and option use readable foreground/background colors */
+select,
+option {
+    color: var(--foreground) !important;
+    background-color: var(--card) !important;
+}
+
+.dark select,
+.dark option {
+    color: var(--foreground) !important;
+    background-color: var(--card) !important;
+}

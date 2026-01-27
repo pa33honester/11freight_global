@@ -62,15 +62,15 @@ const confirmSubmit = async () => {
                                 <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.full_name }}</option>
                             </select>
                         </div>
-                        <div>
+                        <div class="flex flex-col space-y-2">
                             <Label>Reference</Label>
                             <Input v-model="form.reference_code" />
                         </div>
-                        <div>
+                        <div class="flex flex-col space-y-2">
                             <Label>Amount</Label>
                             <Input v-model="form.amount" type="number" step="0.01" />
                         </div>
-                        <div>
+                        <div class="flex flex-col space-y-2">
                             <Label>Status</Label>
                             <select v-model="form.status" class="w-full rounded border px-3 py-2">
                                 <option value="PENDING">PENDING</option>

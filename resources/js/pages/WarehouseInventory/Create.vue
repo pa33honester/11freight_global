@@ -47,7 +47,7 @@ const goBack = () => window.history.back();
           <CardTitle>Create Inventory Item</CardTitle>
         </CardHeader>
         <CardContent class="space-y-4">
-          <div class="space-y-2">
+          <div class="flex flex-col space-y-6">
             <Label>Shipment</Label>
             <select v-model="form.shipment_id" class="w-full rounded border px-3 py-2">
               <option value="">Select shipment</option>
@@ -56,13 +56,13 @@ const goBack = () => window.history.back();
             <p v-if="form.errors.shipment_id" class="text-sm text-destructive mt-1">{{ form.errors.shipment_id }}</p>
           </div>
 
-          <div>
+          <div class="flex flex-col space-y-6">
             <Label>Shelf</Label>
             <Input v-model="form.shelf" />
             <p v-if="form.errors.shelf" class="text-sm text-destructive mt-1">{{ form.errors.shelf }}</p>
           </div>
 
-          <div>
+          <div class="flex flex-col space-y-6">
             <Label>Photo (optional)</Label>
             <input type="file" accept="image/*" @change="handleFileChange" class="w-full rounded border px-3 py-2" />
             <p v-if="form.errors.photo" class="text-sm text-destructive mt-1">{{ form.errors.photo }}</p>

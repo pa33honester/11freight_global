@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import AppLayout from '@/layouts/AppLayout.vue';
 
 const props = defineProps<{ receipts: any }>();
@@ -13,6 +14,9 @@ const startIndex = computed(() => {
     if (meta?.current_page && meta?.per_page) return (meta.current_page - 1) * meta.per_page + 1;
     return 1;
 });
+const dialogOpen = ref(false);
+const selectedReceipt = ref<any | null>(null);
+
 </script>
 
 <template>
@@ -57,7 +61,7 @@ const startIndex = computed(() => {
                                     <td class="px-4 py-2">{{ r.linked_id || '-' }}</td>
                                     <td class="px-4 py-2">{{ r.created_at }}</td>
                                     <td class="px-4 py-2 text-right">
-                                        <Link :href="`/receipts/${r.id}`"><Button variant="outline" size="sm">View</Button></Link>
+                                        <Button variant="outline" size="sm" @click="() => { selectedReceipt = r; dialogOpen = true }">View</Button>
                                     </td>
                                 </tr>
                                 <tr v-if="receipts.data.length === 0"><td colspan="7" class="p-6 text-center text-muted-foreground">No receipts found.</td></tr>
@@ -66,6 +70,30 @@ const startIndex = computed(() => {
                     </div>
                 </CardContent>
             </Card>
+
+            <Dialog :open="dialogOpen" @update:open="dialogOpen = $event">
+                <DialogContent class="sm:max-w-2xl max-w-full">
+                    <DialogHeader class="border-b border-gray-200 dark:border-gray-700 pb-3 mb-3">
+                        <DialogTitle v-if="selectedReceipt">Receipt #{{ selectedReceipt.receipt_number }}</DialogTitle>
+                        <DialogDescription v-if="selectedReceipt">Type: {{ selectedReceipt.type }}</DialogDescription>
+                    </DialogHeader>
+
+                    <div class="space-y-2" v-if="selectedReceipt">
+                        <div><strong>Linked ID:</strong> {{ selectedReceipt.linked_id || '-' }}</div>
+                        <div><strong>Created:</strong> {{ selectedReceipt.created_at }}</div>
+                        <div><strong>QR:</strong>
+                            <img v-if="selectedReceipt.qr_code" :src="`/storage/${selectedReceipt.qr_code}`" alt="qr" class="w-24 h-24 object-contain rounded" />
+                            <div v-else class="text-muted-foreground">-</div>
+                        </div>
+                    </div>
+
+                    <DialogFooter class="mt-4">
+                        <DialogClose as-child>
+                            <Button variant="secondary">Close</Button>
+                        </DialogClose>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     </AppLayout>
 </template>

@@ -8,54 +8,51 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 
-const props = defineProps<{ customers: Array<{ id: number; full_name: string }>; }>();
+const props = defineProps<{ payments: Array<{ id: number }>; }>();
 
-const form = useForm({ customer_id: '', reference_code: '', amount: '', status: 'PENDING' });
+const form = useForm({ payment_id: '', supplier_name: '', proof_path: '', status: 'PENDING' });
 const submitting = ref(false);
 
 const submit = async () => {
-  if (!form.customer_id) { form.setError('customer_id', 'Please select a customer'); return; }
   submitting.value = true;
-  await form.post('/payments', { preserveScroll: true });
+  await form.post('/supplier-settlements', { preserveScroll: true });
   submitting.value = false;
 };
 </script>
 
 <template>
-  <Head title="Create Payment" />
-  <AppLayout :breadcrumbs="[{ title: 'Payments', href: '/payments' }, { title: 'Create', href: '/payments/create' }]">
+  <Head title="Create Settlement" />
+  <AppLayout :breadcrumbs="[{ title: 'Supplier Settlements', href: '/supplier-settlements' }, { title: 'Create', href: '/supplier-settlements/create' }]">
     <div class="p-4">
       <Card class="max-w-2xl">
         <CardHeader>
-          <CardTitle>Create Payment</CardTitle>
+          <CardTitle>Create Settlement</CardTitle>
         </CardHeader>
         <CardContent>
           <div class="grid gap-4">
             <div class="flex flex-col space-y-2">
-              <Label>Customer</Label>
-              <select v-model="form.customer_id" class="w-full rounded border px-3 py-2">
-                <option value="">Select customer</option>
-                <option v-for="c in props.customers" :key="c.id" :value="c.id">{{ c.full_name }}</option>
+              <Label>Payment</Label>
+              <select v-model="form.payment_id" class="w-full rounded border px-3 py-2">
+                <option value="">Select payment</option>
+                <option v-for="p in props.payments" :key="p.id" :value="p.id">{{ p.id }}</option>
               </select>
-              <p v-if="form.errors.customer_id" class="text-sm text-destructive mt-1">{{ form.errors.customer_id }}</p>
             </div>
 
             <div class="flex flex-col space-y-2">
-              <Label>Reference Code</Label>
-              <Input v-model="form.reference_code" />
+              <Label>Supplier Name</Label>
+              <Input v-model="form.supplier_name" />
             </div>
 
             <div class="flex flex-col space-y-2">
-              <Label>Amount</Label>
-              <Input v-model="form.amount" type="number" step="0.01" />
+              <Label>Proof Path</Label>
+              <Input v-model="form.proof_path" />
             </div>
 
             <div class="flex flex-col space-y-2">
               <Label>Status</Label>
               <select v-model="form.status" class="w-full rounded border px-3 py-2">
                 <option value="PENDING">PENDING</option>
-                <option value="APPROVED">APPROVED</option>
-                <option value="REJECTED">REJECTED</option>
+                <option value="PAID">PAID</option>
               </select>
             </div>
 

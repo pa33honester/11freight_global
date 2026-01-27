@@ -33,12 +33,12 @@ const submit = async () => {
                 </CardHeader>
                 <CardContent>
                     <div class="grid gap-4">
-                        <div>
+                        <div class="flex flex-col space-y-2">
                             <Label>Receipt Number (optional)</Label>
                             <Input v-model="form.receipt_number" />
                         </div>
 
-                        <div>
+                        <div class="flex flex-col space-y-2">
                             <Label>Type</Label>
                             <select v-model="form.type" class="w-full rounded border px-3 py-2">
                                 <option value="PR">PR</option>
@@ -50,7 +50,7 @@ const submit = async () => {
                             </select>
                         </div>
 
-                        <div>
+                        <div class="flex flex-col space-y-2">
                             <Label>Linked ID (optional)</Label>
                             <Input v-model="form.linked_id" />
                         </div>

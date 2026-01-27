@@ -94,10 +94,10 @@ const confirmDelete = async () => {
                                     <td class="px-4 py-2">{{ p.reference_code }}</td>
                                     <td class="px-4 py-2">{{ formatAmount(p.amount) }}</td>
                                     <td class="px-4 py-2">{{ p.status }}</td>
-                                    <td class="px-4 py-2 text-right">
-                                        <Link :href="`/payments/${p.id}`"><Button variant="outline" size="sm">View</Button></Link>
-                                        <Link :href="`/payments/${p.id}/edit`"><Button variant="ghost" size="sm">Edit</Button></Link>
-                                        <Button variant="destructive" size="sm" @click="deleteItem(p.id)">Delete</Button>
+                                    <td class="px-4 py-2 text-right space-x-2">
+                                        <Link :href="`/payments/${p.id}`"><Button class="cursor-pointer" variant="outline" size="sm">View</Button></Link>
+                                        <Link :href="`/payments/${p.id}/edit`"><Button class="cursor-pointer" variant="secondary" size="sm">Edit</Button></Link>
+                                        <Button class="cursor-pointer" variant="destructive" size="sm" @click="deleteItem(p.id)">Delete</Button>
                                     </td>
                                 </tr>
                                 <tr v-if="payments.data.length === 0"><td colspan="5" class="p-6 text-center text-muted-foreground">No payments found.</td></tr>
