@@ -2,6 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -15,11 +16,49 @@ const form = useForm({ roles: selectedSingle.value ? [selectedSingle.value] : []
 const roleForm = useForm({ name: '' });
 const creating = ref(false);
 
+const successMsg = ref('');
+const errorMsgs = ref<string[]>([]);
+let successTimer: number | null = null;
+let errorTimer: number | null = null;
+
+function showSuccess(msg: string) {
+    successMsg.value = msg;
+    if (successTimer) window.clearTimeout(successTimer);
+    successTimer = window.setTimeout(() => { successMsg.value = ''; successTimer = null; }, 4000);
+}
+
+function showErrors(arr: string[]) {
+    errorMsgs.value = arr;
+    if (errorTimer) window.clearTimeout(errorTimer);
+    errorTimer = window.setTimeout(() => { errorMsgs.value = []; errorTimer = null; }, 6000);
+}
+
 // local mutable copy of roles so we can optimistically add new roles
 const rolesLocal = ref(Array.isArray(props.roles) ? props.roles.slice() : []);
 
 function submit() {
-    form.post(`/admin/staff/${props.user.id}/roles`, { onSuccess: () => { /* noop */ } });
+    successMsg.value = '';
+    errorMsgs.value = [];
+    form.post(`/admin/staff/${props.user.id}/roles`, {
+        onSuccess: () => {
+            showSuccess('Roles updated.');
+            errorMsgs.value = [];
+        },
+        onError: (errs) => {
+            // errs is an object of field -> messages
+            try {
+                const arr: string[] = [];
+                Object.values(errs).forEach((v: any) => {
+                    if (Array.isArray(v)) arr.push(...v);
+                    else if (typeof v === 'string') arr.push(v);
+                });
+                showErrors(arr.length ? arr : ['Failed to update roles.']);
+            } catch (e: any) {
+                console.log(e);
+                showErrors(['Failed to update roles.']);
+            }
+        }
+    });
 }
 
 function createRole() {
@@ -68,6 +107,27 @@ function setRole(name: string) {
 <template>
     <Head :title="`Staff - ${props.user.name}`" />
     <AppLayout :breadcrumbs="[{ title: 'Staff & Roles', href: '/admin/staff' }, { title: props.user.name, href: `/admin/staff/${props.user.id}` }]">
+        <!-- Toast container (top-right) -->
+        <div class="fixed top-6 right-6 z-50 flex flex-col items-end space-y-3">
+            <transition name="fade">
+                <Alert v-if="successMsg" class="w-96 bg-gradient-to-r from-emerald-500 to-emerald-400 text-white shadow-lg ring-1 ring-emerald-300">
+                    <AlertTitle class="text-white">Success</AlertTitle>
+                    <AlertDescription class="text-white">{{ successMsg }}</AlertDescription>
+                </Alert>
+            </transition>
+
+            <transition name="fade">
+                <Alert v-if="errorMsgs.length" variant="destructive" class="w-96 bg-gradient-to-r from-rose-600 to-rose-500 text-white shadow-lg ring-1 ring-rose-400">
+                    <AlertTitle class="text-white">Failed</AlertTitle>
+                    <AlertDescription class="text-white">
+                        <ul class="list-inside list-disc text-sm">
+                            <li v-for="(e, i) in errorMsgs" :key="i">{{ e }}</li>
+                        </ul>
+                    </AlertDescription>
+                </Alert>
+            </transition>
+        </div>
+
         <div class="p-4">
             <Card>
                 <CardHeader>
@@ -109,3 +169,29 @@ function setRole(name: string) {
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+/* Enhanced fade/slide toast animation */
+.fade-enter-active {
+    transition: transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 300ms ease;
+}
+.fade-leave-active {
+    transition: transform 260ms cubic-bezier(0.4, 0.0, 0.2, 1), opacity 220ms ease;
+}
+.fade-enter-from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.985);
+}
+.fade-enter-to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+.fade-leave-from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+.fade-leave-to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.99);
+}
+</style>

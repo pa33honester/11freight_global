@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Schema;
 
 class StaffController extends Controller
@@ -28,7 +29,24 @@ class StaffController extends Controller
     public function show($id)
     {
         $user = User::with('roles')->findOrFail($id);
-        $roles = \Spatie\Permission\Models\Role::orderBy('name')->get();
+        // Ensure the expected canonical roles are listed and ordered for the UI
+        $expected = ['admin', 'warehouse_staff', 'operation_manager', 'finance_manager'];
+
+        // Ensure canonical roles exist in DB so admin can assign them.
+        foreach ($expected as $rname) {
+            Role::firstOrCreate(['name' => $rname]);
+        }
+
+        // Fetch all roles and order them by our expected canonical list first,
+        // then any additional roles alphabetically after.
+        $all = Role::orderBy('name')->get()
+            ->map(fn($r) => ['id' => $r->id, 'name' => $r->name])
+            ->values();
+
+        $roles = $all->sortBy(function ($r) use ($expected) {
+            $idx = array_search($r['name'], $expected, true);
+            return $idx === false ? count($expected) + 1 : $idx;
+        })->values();
 
         // expose role names array
         $user->role_names = $user->roles->pluck('name');
