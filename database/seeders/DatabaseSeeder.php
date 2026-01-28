@@ -23,5 +23,8 @@ class DatabaseSeeder extends Seeder
 
         // Sample supplier settlements
         $this->call(SupplierSettlementSeeder::class);
+
+        // Setup canonical users and roles for local/dev
+        $this->call(SetupUsersAndRolesSeeder::class);
     }
 }
