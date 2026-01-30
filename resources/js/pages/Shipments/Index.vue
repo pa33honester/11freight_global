@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import { Trash2, Pencil, Plus } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -47,9 +48,53 @@ interface PaginatedData {
     }>;
 }
 
-defineProps<{
+const props = defineProps<{
     shipments: PaginatedData;
 }>();
+
+interface PageProps {
+    name: string;
+    auth: any;
+    sidebarOpen: boolean;
+    filters?: {
+        q?: string;
+        status?: string;
+        per_page?: number;
+    };
+    [key: string]: any;
+}
+
+const page = usePage<PageProps>();
+const pageProps = page.props.value as PageProps;
+
+const q = ref((pageProps?.filters?.q as string) ?? '');
+const statusFilter = ref((pageProps?.filters?.status as string) ?? '');
+const perPage = ref((pageProps?.filters?.per_page as number) ?? props.shipments.per_page ?? 10);
+
+const applyFilters = () => {
+    const params: Record<string, any> = {};
+    if (q.value) params.q = q.value;
+    if (statusFilter.value) params.status = statusFilter.value;
+    if (perPage.value) params.per_page = perPage.value;
+
+    router.get('/shipments', params, { preserveState: true, replace: true });
+};
+
+const clearFilters = () => {
+    q.value = '';
+    statusFilter.value = '';
+    perPage.value = props.shipments.per_page ?? 10;
+    applyFilters();
+};
+
+// Live search: debounce updates to avoid too many requests while typing
+let searchTimer: number | null = null;
+watch(q, () => {
+    if (searchTimer) window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => {
+        applyFilters();
+    }, 500);
+});
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -104,6 +149,30 @@ const confirmDelete = async () => {
                     <CardTitle>Shipment List</CardTitle>
                     <CardDescription>View and manage shipments</CardDescription>
                 </CardHeader>
+                <div class="p-4 flex gap-3 items-center">
+                    <input type="search" v-model="q" @keyup.enter="applyFilters" placeholder="Search shipments..." class="rounded border px-3 py-2 w-64" />
+
+                    <select v-model="statusFilter" class="rounded border px-3 py-2">
+                        <option value="">All statuses</option>
+                        <option value="RECEIVED">RECEIVED</option>
+                        <option value="IN_WAREHOUSE">IN_WAREHOUSE</option>
+                        <option value="IN_CONTAINER">IN_CONTAINER</option>
+                        <option value="DISPATCHED">DISPATCHED</option>
+                        <option value="ARRIVED_GHANA">ARRIVED_GHANA</option>
+                        <option value="DELIVERED">DELIVERED</option>
+                        <option value="VOID">VOID</option>
+                    </select>
+
+                    <select v-model.number="perPage" class="rounded border px-3 py-2">
+                        <option :value="10">10</option>
+                        <option :value="25">25</option>
+                        <option :value="50">50</option>
+                        <option :value="100">100</option>
+                    </select>
+
+                    <Button @click="applyFilters">Apply</Button>
+                    <Button variant="outline" @click="clearFilters">Clear</Button>
+                </div>
                 <CardContent class="pb-8">
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse text-left text-sm">

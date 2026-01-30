@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Receipt;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Services\ReceiptQrService;
+use App\Services\ReceiptService;
 use Illuminate\Support\Facades\Storage;
 
 class ReceiptController extends Controller
@@ -21,7 +21,7 @@ class ReceiptController extends Controller
         return Inertia::render('Receipts/Create');
     }
 
-    public function store(Request $request, ReceiptQrService $qrService)
+    public function store(Request $request, ReceiptService $receiptService)
     {
         // coerce empty linked_id to null to satisfy integer rule
         if ($request->input('linked_id') === '') {
@@ -34,26 +34,17 @@ class ReceiptController extends Controller
             'linked_id' => 'nullable|integer',
         ]);
 
-        $data['receipt_number'] = $data['receipt_number'] ?? 'RCT-' . time() . '-' . rand(1000,9999);
+        if (empty($data['receipt_number'])) {
+            $now = now();
+            $date = $now->format('Ymd');
+            $ms = (int) (microtime(true) * 1000) % 10000; // keep 4-digit millisecond fragment
+            $ms = str_pad((string) $ms, 4, '0', STR_PAD_LEFT);
+            $type = $data['type'] ?? 'PR';
+            $data['receipt_number'] = sprintf('%s-11F-%s-%s', $type, $date, $ms);
+        }
 
-        // create record first to get id
-        $receipt = Receipt::create([
-            'receipt_number' => $data['receipt_number'],
-            'type' => $data['type'],
-            'linked_id' => $data['linked_id'] ?? null,
-            'qr_code' => null,
-            'created_at' => now(),
-        ]);
-
-        // generate QR content (we'll encode receipt id and number)
         try {
-            $content = json_encode(['id' => $receipt->id, 'receipt_number' => $receipt->receipt_number]);
-            $svg = $qrService->generateSvg($content, 400);
-            $filename = 'receipt-' . $receipt->id . '.svg';
-            $path = $qrService->storeSvg($svg, $filename);
-
-            $receipt->qr_code = $path;
-            $receipt->save();
+            $receipt = $receiptService->create($data);
 
             if ($request->wantsJson() || $request->headers->get('accept') === 'application/json') {
                 return response()->json($receipt, 201);
@@ -61,13 +52,6 @@ class ReceiptController extends Controller
 
             return redirect()->route('receipts.show', $receipt->id)->with('success','Receipt created.');
         } catch (\Throwable $e) {
-            // cleanup created record if QR generation/storage failed
-            try {
-                $receipt->delete();
-            } catch (\Throwable $_) {
-                // ignore
-            }
-
             if ($request->wantsJson() || $request->headers->get('accept') === 'application/json') {
                 return response()->json(['error' => 'Failed to generate receipt QR code: ' . $e->getMessage()], 500);
             }

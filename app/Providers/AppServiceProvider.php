@@ -13,7 +13,7 @@ use App\Observers\AuditObserver;
 use App\Models\Customer;
 use App\Models\Shipment;
 use App\Models\Container;
-use App\Models\WarehouseInventory;
+use App\Models\Warehouse;
 use App\Models\Payment;
 use App\Models\Receipt;
 use App\Models\User;
@@ -43,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
             Customer::class,
             Shipment::class,
             Container::class,
-            WarehouseInventory::class,
+            Warehouse::class,
             Payment::class,
             Receipt::class,
             User::class,

@@ -34,4 +34,33 @@ class Receipt extends Model
     {
         return ['PR','WR','SR','AR','DR','SS'];
     }
+
+    /**
+     * Generate a receipt code for given type.
+     *
+     * @param string $type
+     * @return string
+     */
+    public static function generate_code(string $type = 'PR'): string
+    {
+        $now = now();
+        $date = $now->format('Ymd');
+        $ms = (int) (microtime(true) * 1000) % 10000;
+        $ms = str_pad((string) $ms, 4, '0', STR_PAD_LEFT);
+
+        return sprintf('%s-11F-%s-%s', strtoupper($type), $date, $ms);
+    }
+
+    /**
+     * Ensure receipt_number is generated when creating if absent.
+     */
+    protected static function booted()
+    {
+        static::creating(function (self $model) {
+            if (empty($model->receipt_number)) {
+                $type = $model->type ?? 'PR';
+                $model->receipt_number = self::generate_code($type);
+            }
+        });
+    }
 }

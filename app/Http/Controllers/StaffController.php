@@ -2,33 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Schema;
 
 class StaffController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, UserService $userService)
     {
-        // Use spatie roles relationship (eager load roles)
-        $users = User::with('roles')->select(['id', 'name', 'email', 'created_at'])->latest()->paginate(20)->withQueryString();
+        $filters = [
+            'q' => $request->query('q'),
+            'page' => $request->query('page'),
+        ];
 
-        // Map to include a `role` attribute (comma-separated role names)
-        $users->getCollection()->transform(function ($u) {
-            $u->role = $u->roles->pluck('name')->join(', ');
-            return $u;
-        });
+        $perPage = (int) $request->query('per_page', 20);
+
+        $users = $userService->paginate($filters, $perPage);
+
+        // Convert paginator to array and add a `role` field computed from loaded roles
+        $usersArray = json_decode(json_encode($users), true);
+        foreach ($usersArray['data'] as &$u) {
+            $roleNames = [];
+            if (!empty($u['roles']) && is_array($u['roles'])) {
+                $roleNames = array_map(fn($r) => $r['name'] ?? '', $u['roles']);
+            }
+            $u['role'] = trim(implode(', ', array_filter($roleNames)));
+            unset($u['roles']);
+        }
 
         return Inertia::render('Admin/Staff/Index', [
-            'users' => $users,
+            'users' => $usersArray,
+            'filters' => [
+                'q' => $request->query('q'),
+                'per_page' => $perPage,
+            ],
         ]);
     }
 
-    public function show($id)
+    public function show($id, UserService $userService)
     {
-        $user = User::with('roles')->findOrFail($id);
+        $user = $userService->find((int) $id)->load('roles');
         // Ensure the expected canonical roles are listed and ordered for the UI
         $expected = ['admin', 'warehouse_staff', 'operation_manager', 'finance_manager'];
 
@@ -57,7 +71,7 @@ class StaffController extends Controller
         ]);
     }
 
-    public function updateRoles(Request $request, $id)
+    public function updateRoles(Request $request, $id, UserService $userService)
     {
         $request->validate([
             'roles' => 'required|array|size:1',
@@ -65,8 +79,7 @@ class StaffController extends Controller
         ]);
         $roles = $request->input('roles', []);
 
-        $user = User::findOrFail($id);
-        $user->syncRoles($roles);
+        $userService->syncRoles((int) $id, $roles);
 
         return redirect()->back()->with('success', 'Roles updated.');
     }

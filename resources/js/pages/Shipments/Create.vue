@@ -47,12 +47,6 @@ const validate = (): boolean => {
     // clear previous client errors
     Object.keys(clientErrors).forEach((k) => delete clientErrors[k]);
 
-    if (!form.shipment_code || !String(form.shipment_code).trim()) {
-        clientErrors.shipment_code = 'Shipment code is required.';
-    } else if (String(form.shipment_code).length > 50) {
-        clientErrors.shipment_code = 'Shipment code must be at most 50 characters.';
-    }
-
     if (!form.customer_id) {
         clientErrors.customer_id = 'Please select a customer.';
     }
@@ -98,12 +92,6 @@ const submit = () => {
                 </CardHeader>
                 <form @submit.prevent="submit">
                     <CardContent class="space-y-4 pb-8">
-                        <div class="space-y-2">
-                            <Label for="shipment_code">Shipment Code <span class="text-destructive">*</span></Label>
-                            <Input id="shipment_code" v-model="form.shipment_code" required :class="{ 'border-destructive': clientErrors.shipment_code || form.errors.shipment_code }" />
-                            <p v-if="clientErrors.shipment_code || form.errors.shipment_code" class="text-sm text-destructive">{{ clientErrors.shipment_code || form.errors.shipment_code }}</p>
-                        </div>
-
                         <div class="space-y-2">
                             <Label for="customer_id">Customer</Label>
                                 <select id="customer_id" v-model.number="form.customer_id" class="w-full rounded border px-3 py-2">

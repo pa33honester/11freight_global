@@ -36,7 +36,7 @@ const allItems: Record<string, NavItem> = {
     overview: { title: 'Overview', href: dashboard(), icon: LayoutGrid },
     customers: { title: 'Customers', href: '/customers', icon: Users },
     shipments: { title: 'Shipments', href: '/shipments', icon: Truck },
-    warehouse: { title: 'Warehouse Inventory', href: '/warehouse-inventory', icon: Archive },
+    warehouse: { title: 'Warehouse Inventory', href: '/warehouse', icon: Archive },
     containers: { title: 'Containers', href: '/containers', icon: Box },
     payments: { title: 'Pay Suppliers', href: '/payments', icon: CreditCard },
     staff: { title: 'Staff & Roles', href: '/admin/staff', icon: UserCheck },

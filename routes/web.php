@@ -3,7 +3,7 @@
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\ContainerController;
-use App\Http\Controllers\WarehouseInventoryController;
+use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -29,7 +29,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware(\App\Http\Middleware\EnsureRole::class . ':admin,operation_manager');
 
     // Warehouse inventory: admin and warehouse_staff
-    Route::resource('warehouse-inventory', WarehouseInventoryController::class)
+    Route::post('warehouse/intake', [App\Http\Controllers\WarehouseController::class, 'intake'])
+        ->middleware(\App\Http\Middleware\EnsureRole::class . ':admin,warehouse_staff')
+        ->name('warehouse.intake');
+
+    Route::get('warehouse/intake', [App\Http\Controllers\WarehouseController::class, 'intakeForm'])
+        ->middleware(\App\Http\Middleware\EnsureRole::class . ':admin,warehouse_staff')
+        ->name('warehouse.intake.form');
+
+    Route::resource('warehouse', WarehouseController::class)
         ->middleware(\App\Http\Middleware\EnsureRole::class . ':admin,warehouse_staff');
 
     // Payments and supplier settlements: admin and finance

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Payment;
-use App\Models\Customer;
+use App\Services\CustomerService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -19,9 +19,9 @@ class PaymentController extends Controller
     }
 
     /** Show create form. */
-    public function create()
+    public function create(CustomerService $customerService)
     {
-        $customers = Customer::orderBy('full_name')->get();
+        $customers = $customerService->allOrderedByName();
         return Inertia::render('Payments/Create', [
             'customers' => $customers,
         ]);
@@ -53,10 +53,10 @@ class PaymentController extends Controller
     }
 
     /** Show edit form. */
-    public function edit($id)
+    public function edit($id, CustomerService $customerService)
     {
         $payment = Payment::findOrFail($id);
-        $customers = Customer::orderBy('full_name')->get();
+        $customers = $customerService->allOrderedByName();
         return Inertia::render('Payments/Edit', ['payment' => $payment, 'customers' => $customers]);
     }
 

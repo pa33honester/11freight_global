@@ -107,7 +107,7 @@ const submit = () => {
 					<CardContent class="space-y-4 pb-8">
 						<div class="space-y-2">
 							<Label for="shipment_code">Shipment Code <span class="text-destructive">*</span></Label>
-							<Input id="shipment_code" v-model="form.shipment_code" required :class="{ 'border-destructive': clientErrors.shipment_code || form.errors.shipment_code }" />
+							<Input id="shipment_code" :disabled="true" v-model="form.shipment_code" required :class="{ 'border-destructive': clientErrors.shipment_code || form.errors.shipment_code }" />
 							<p v-if="clientErrors.shipment_code || form.errors.shipment_code" class="text-sm text-destructive">{{ clientErrors.shipment_code || form.errors.shipment_code }}</p>
 						</div>
 

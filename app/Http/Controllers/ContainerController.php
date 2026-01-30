@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Container;
+use App\Services\ContainerService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -11,9 +11,9 @@ class ContainerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ContainerService $service)
     {
-        $containers = Container::latest()->paginate(10);
+        $containers = $service->paginate(10);
 
         return Inertia::render('Containers/Index', [
             'containers' => $containers,
@@ -40,7 +40,7 @@ class ContainerController extends Controller
             'arrival_date' => 'nullable|date',
         ]);
 
-        Container::create($validated);
+        app(ContainerService::class)->create($validated);
 
         return redirect()->route('containers.index')->with('success', 'Container created successfully.');
     }
@@ -48,9 +48,10 @@ class ContainerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, ContainerService $service)
     {
-        $container = Container::findOrFail($id);
+        $container = $service->findOrFail((int) $id);
+
         return Inertia::render('Containers/Show', [
             'container' => $container,
         ]);
@@ -59,9 +60,10 @@ class ContainerController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id, ContainerService $service)
     {
-        $container = Container::findOrFail($id);
+        $container = $service->findOrFail((int) $id);
+
         return Inertia::render('Containers/Edit', [
             'container' => $container,
         ]);
@@ -72,7 +74,7 @@ class ContainerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $container = Container::findOrFail($id);
+        $container = app(ContainerService::class)->findOrFail((int) $id);
 
         $validated = $request->validate([
             'container_code' => 'required|string|max:50|unique:containers,container_code,' . $container->id,
@@ -81,7 +83,7 @@ class ContainerController extends Controller
             'arrival_date' => 'nullable|date',
         ]);
 
-        $container->update($validated);
+        app(ContainerService::class)->update($container, $validated);
 
         return redirect()->route('containers.index')->with('success', 'Container updated successfully.');
     }
@@ -89,10 +91,9 @@ class ContainerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, ContainerService $service)
     {
-        $container = Container::findOrFail($id);
-        $container->delete();
+        $service->delete((int) $id);
 
         return redirect()->route('containers.index')->with('success', 'Container deleted successfully.');
     }

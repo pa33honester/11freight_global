@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Services\CustomerService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -11,10 +12,10 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(CustomerService $customerService)
     {
-        $customers = Customer::latest()->paginate(10);
-        
+        $customers = $customerService->paginateLatest(10);
+
         return Inertia::render('Customers/Index', [
             'customers' => $customers,
         ]);
@@ -31,7 +32,7 @@ class CustomerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, CustomerService $customerService)
     {
         $validated = $request->validate([
             'full_name' => 'required|string|max:150',
@@ -40,7 +41,7 @@ class CustomerController extends Controller
             'customer_code' => 'nullable|string|max:50|unique:customers,customer_code',
         ]);
 
-        Customer::create($validated);
+        $customerService->create($validated);
 
         return redirect()->route('customers.index')
             ->with('success', 'Customer created successfully.');
@@ -69,7 +70,7 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Customer $customer)
+    public function update(Request $request, Customer $customer, CustomerService $customerService)
     {
         $validated = $request->validate([
             'full_name' => 'required|string|max:150',
@@ -78,7 +79,7 @@ class CustomerController extends Controller
             'customer_code' => 'nullable|string|max:50|unique:customers,customer_code,' . $customer->id,
         ]);
 
-        $customer->update($validated);
+        $customerService->update($customer, $validated);
 
         return redirect()->route('customers.index')
             ->with('success', 'Customer updated successfully.');
@@ -87,9 +88,9 @@ class CustomerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Customer $customer)
+    public function destroy(Customer $customer, CustomerService $customerService)
     {
-        $customer->delete();
+        $customerService->delete($customer);
 
         return redirect()->route('customers.index')
             ->with('success', 'Customer deleted successfully.');

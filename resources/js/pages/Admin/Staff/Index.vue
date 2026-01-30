@@ -1,11 +1,38 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 
 const props = defineProps<{ users: any }>();
+
+const page = usePage();
+const pageProps = page.props.value as { filters?: { q?: string; per_page?: number } };
+
+const q = ref((pageProps?.filters?.q as string) ?? '');
+const perPage = ref((pageProps?.filters?.per_page as number) ?? props.users.per_page ?? 20);
+
+const applyFilters = () => {
+    const params: Record<string, any> = {};
+    if (q.value) params.q = q.value;
+    if (perPage.value) params.per_page = perPage.value;
+    router.get('/admin/staff', params, { preserveState: true, replace: true });
+};
+
+const clearFilters = () => {
+    q.value = '';
+    perPage.value = props.users.per_page ?? 20;
+    applyFilters();
+};
+
+// live search debounce
+let searchTimer: number | null = null;
+watch(q, () => {
+    if (searchTimer) window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => applyFilters(), 400);
+});
 
 const startIndex = computed(() => {
     const meta = props.users?.meta;
@@ -31,6 +58,20 @@ const startIndex = computed(() => {
                     <CardTitle>Staff</CardTitle>
                     <CardDescription>Users and roles</CardDescription>
                 </CardHeader>
+                <div class="p-4 flex gap-3 items-center">
+                    <input type="search" v-model="q" @keyup.enter="applyFilters" placeholder="Search users..." class="rounded border px-3 py-2 w-64" />
+
+                    <select v-model.number="perPage" class="rounded border px-3 py-2">
+                        <option :value="10">10</option>
+                        <option :value="20">20</option>
+                        <option :value="50">50</option>
+                        <option :value="100">100</option>
+                    </select>
+
+                    <Button @click="applyFilters">Apply</Button>
+                    <Button variant="outline" @click="clearFilters">Clear</Button>
+                </div>
+
                 <CardContent>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm">

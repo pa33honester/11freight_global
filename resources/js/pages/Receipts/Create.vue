@@ -9,8 +9,7 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 
 const form = useForm({
-    receipt_number: '',
-    type: 'INVOICE',
+    type: 'PR',
     linked_id: '',
 });
 
@@ -33,10 +32,6 @@ const submit = async () => {
                 </CardHeader>
                 <CardContent>
                     <div class="grid gap-4">
-                        <div class="flex flex-col space-y-2">
-                            <Label>Receipt Number (optional)</Label>
-                            <Input v-model="form.receipt_number" />
-                        </div>
 
                         <div class="flex flex-col space-y-2">
                             <Label>Type</Label>
