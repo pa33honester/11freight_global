@@ -30,6 +30,18 @@ class Receipt extends Model
         'qr_code',
     ];
 
+    /**
+     * Get the receipt image URL if it exists.
+     */
+    public function getReceiptImageUrlAttribute(): ?string
+    {
+        $imagePath = "receipts_images/{$this->receipt_number}.png";
+        if (file_exists(storage_path("app/public/{$imagePath}"))) {
+            return "/storage/{$imagePath}";
+        }
+        return null;
+    }
+
     public static function types(): array
     {
         return ['PR','WR','SR','AR','DR','SS'];

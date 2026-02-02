@@ -88,7 +88,7 @@ class WarehouseController extends Controller
             // non-fatal: continue but record failure in logs if needed
         }
 
-        return redirect()->route('warehouse.index')->with('success','Item added to warehouse inventory.');
+        return back()->with('success','Item added to warehouse inventory.');
     }
 
     /**
@@ -213,6 +213,6 @@ class WarehouseController extends Controller
     {
         $service->delete((int) $id);
 
-        return redirect()->route('warehouse.index')->with('success','Warehouse item removed.');
+        return back()->with('success','Warehouse item removed.');
     }
 }

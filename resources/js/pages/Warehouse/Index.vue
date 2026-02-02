@@ -65,6 +65,15 @@ const perPage = ref((pageProps?.filters?.per_page as number) ?? (props.filters?.
 
 const intakeOpen = ref(false);
 
+// Photo viewer state
+const photoViewerOpen = ref(false);
+const selectedPhotoUrl = ref<string | null>(null);
+
+const openPhotoViewer = (photoUrl: string) => {
+    selectedPhotoUrl.value = photoUrl;
+    photoViewerOpen.value = true;
+};
+
 const intakeForm = useForm<{
     customer_id: string;
     supplier_name: string;
@@ -95,11 +104,20 @@ const intakeSubmit = async () => {
 
     intakeSubmitting.value = true;
     try {
-        intakeForm.post('/warehouse/intake', { preserveScroll: true, forceFormData: true });
-        intakeForm.reset();
+        intakeForm.post('/warehouse/intake', {
+            preserveScroll: true,
+            forceFormData: true,
+            onSuccess: () => {
+                intakeForm.reset();
+                intakeOpen.value = false;
+                router.get('/warehouse', {}, { preserveScroll: true });
+            },
+            onError: () => {
+                intakeSubmitting.value = false;
+            }
+        });
     } finally {
         intakeSubmitting.value = false;
-        intakeOpen.value = false;
     }
 };
 
@@ -131,10 +149,18 @@ const deleteItem = (id: number) => {
 const confirmDelete = async () => {
     if (!deleting.value) return;
     deletingProcessing.value = true;
-    await router.delete(`/warehouse/${deleting.value}`, { preserveScroll: true });
-    deletingProcessing.value = false;
-    confirmOpen.value = false;
-    deleting.value = null;
+    router.delete(`/warehouse/${deleting.value}`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            confirmOpen.value = false;
+            deleting.value = null;
+            deletingProcessing.value = false;
+            router.get('/warehouse', {}, { preserveScroll: true });
+        },
+        onError: () => {
+            deletingProcessing.value = false;
+        }
+    });
 };
 
 const applyFilters = () => {
@@ -213,7 +239,7 @@ watch(q, () => {
                                     <td class="px-4 py-3">{{ it.shelf || '-' }}</td>
                                     <td class="px-4 py-3">
                                         <div v-if="it.photo_url">
-                                            <img :src="it.photo_url" class="h-12 w-auto rounded" alt="photo" />
+                                            <img :src="it.photo_url" class="h-12 w-auto rounded cursor-pointer hover:opacity-80 transition-opacity" alt="photo" @click="openPhotoViewer(it.photo_url)" />
                                         </div>
                                         <div v-else>{{ it.photo_path ? 'View' : '-' }}</div>
                                     </td>
@@ -311,6 +337,23 @@ watch(q, () => {
                         </DialogClose>
 
                         <Button variant="destructive" :disabled="deletingProcessing" @click="confirmDelete">{{ deletingProcessing ? 'Deleting...' : 'Delete' }}</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <!-- Photo Viewer Modal -->
+            <Dialog :open="photoViewerOpen" @update:open="photoViewerOpen = $event">
+                <DialogContent class="sm:max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle>Item Photo</DialogTitle>
+                    </DialogHeader>
+                    <div class="flex items-center justify-center bg-muted rounded-lg p-4 min-h-80">
+                        <img v-if="selectedPhotoUrl" :src="selectedPhotoUrl" class="max-w-full max-h-96 rounded" alt="Full size photo" />
+                    </div>
+                    <DialogFooter>
+                        <DialogClose as-child>
+                            <Button variant="secondary">Close</Button>
+                        </DialogClose>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
