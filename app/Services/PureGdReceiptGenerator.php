@@ -12,6 +12,7 @@ use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Writer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class PureGdReceiptGenerator
 {
@@ -97,26 +98,22 @@ class PureGdReceiptGenerator
     
     protected function saveImage($image, Receipt $receipt): string
     {
-        $directory = public_path('receipts_images');
         $filename = $receipt->receipt_number . '.png';
-        $outputPath = $directory . '/' . $filename;
+        $path = 'receipts_images/' . $filename;
         
-        // Ensure directory exists
-        if (!is_dir($directory)) {
-            if (!mkdir($directory, 0755, true)) {
-                Log::error('Failed to create receipt image directory', ['path' => $directory]);
-                return '';
-            }
-        }
+        // Use Storage disk to save - this makes it accessible via /storage/ (with symlink)
+        $imageData = '';
+        ob_start();
+        imagepng($image, null, $this->config['image']['compression']);
+        $imageData = ob_get_clean();
         
-        // Save as PNG
-        if (!imagepng($image, $outputPath, $this->config['image']['compression'])) {
-            Log::error('Failed to save receipt image to disk', ['path' => $outputPath, 'receipt_id' => $receipt->id]);
+        if (!Storage::disk('public')->put($path, $imageData)) {
+            Log::error('Failed to save receipt image to disk', ['path' => $path, 'receipt_id' => $receipt->id]);
             return '';
         }
         
-        Log::debug('Receipt image saved to public directory', ['path' => $outputPath, 'url_path' => '/receipts_images/' . $filename]);
-        return '/receipts_images/' . $filename;
+        Log::debug('Receipt image saved to storage', ['path' => $path, 'receipt_id' => $receipt->id]);
+        return $path;
     }
 
     protected function drawCompanyName($image, int $width, array $colors): void

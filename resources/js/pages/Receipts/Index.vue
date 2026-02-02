@@ -67,7 +67,7 @@ const openImageViewer = (imageUrl: string) => {
                                     <td class="px-4 py-2">{{ r.linked_id || '-' }}</td>
                                     <td class="px-4 py-2">{{ r.created_at }}</td>
                                     <td class="px-4 py-2 text-right">
-                                        <Button variant="outline" size="sm" @click="openImageViewer(`/receipts_images/${r.receipt_number}.png`)">View</Button>
+                                        <Button variant="outline" size="sm" @click="openImageViewer(`/storage/receipts_images/${r.receipt_number}.png`)">View</Button>
                                     </td>
                                 </tr>
                                 <tr v-if="receipts.data.length === 0"><td colspan="7" class="p-6 text-center text-muted-foreground">No receipts found.</td></tr>
