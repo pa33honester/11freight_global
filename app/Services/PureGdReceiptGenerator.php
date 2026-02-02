@@ -101,19 +101,38 @@ class PureGdReceiptGenerator
         $filename = $receipt->receipt_number . '.png';
         $path = 'receipts_images/' . $filename;
         
-        // Use Storage disk to save - this makes it accessible via /storage/ (with symlink)
-        $imageData = '';
-        ob_start();
-        imagepng($image, null, $this->config['image']['compression']);
-        $imageData = ob_get_clean();
+        // Create temp file to write image to
+        $tempFile = tempnam(sys_get_temp_dir(), 'receipt_');
         
-        if (!Storage::disk('public')->put($path, $imageData)) {
-            Log::error('Failed to save receipt image to disk', ['path' => $path, 'receipt_id' => $receipt->id]);
-            return '';
+        try {
+            // Write PNG to temporary file
+            if (!imagepng($image, $tempFile, $this->config['image']['compression'])) {
+                Log::error('Failed to write PNG to temp file', ['receipt_id' => $receipt->id, 'temp_file' => $tempFile]);
+                @unlink($tempFile);
+                return '';
+            }
+            
+            // Read temp file content
+            $imageData = file_get_contents($tempFile);
+            if ($imageData === false) {
+                Log::error('Failed to read temp file', ['receipt_id' => $receipt->id, 'temp_file' => $tempFile]);
+                @unlink($tempFile);
+                return '';
+            }
+            
+            // Save to storage disk
+            if (!Storage::disk('public')->put($path, $imageData)) {
+                Log::error('Failed to save receipt image to storage disk', ['path' => $path, 'receipt_id' => $receipt->id]);
+                @unlink($tempFile);
+                return '';
+            }
+            
+            Log::debug('Receipt image saved to storage', ['path' => $path, 'receipt_id' => $receipt->id]);
+            return $path;
+        } finally {
+            // Clean up temp file
+            @unlink($tempFile);
         }
-        
-        Log::debug('Receipt image saved to storage', ['path' => $path, 'receipt_id' => $receipt->id]);
-        return $path;
     }
 
     protected function drawCompanyName($image, int $width, array $colors): void
