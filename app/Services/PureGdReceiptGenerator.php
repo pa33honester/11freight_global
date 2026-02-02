@@ -397,10 +397,12 @@ class PureGdReceiptGenerator
         $fontPath = $this->getFontPath();
         
         if (!$fontPath) {
-            // Fallback to built-in font
-            $bbox = imagettfbbox($size, 0, $fontPath ?: '', $text);
-            $textWidth = $bbox[2] - $bbox[0];
-            imagestring($image, 3, (int)($x - $textWidth / 2), $y, $text, $color);
+            // Fallback to built-in GD font (no TTF available)
+            // Use built-in font 5 (largest available)
+            $builtInFont = 5;
+            // Approximate text width: each character is about 9 pixels wide
+            $textWidth = strlen($text) * 9;
+            imagestring($image, $builtInFont, (int)($x - $textWidth / 2), $y, $text, $color);
             return;
         }
         
@@ -425,6 +427,17 @@ class PureGdReceiptGenerator
     {
         $fontPath = $this->getFontPath();
         $config = $this->config['info_section'];
+        
+        if (!$fontPath) {
+            // Fallback to built-in font (no TTF available)
+            $builtInFont = 3;
+            // Draw label (left)
+            imagestring($image, $builtInFont, $config['left_margin'], $y, strtoupper($label), $colors[$config['label_color']]);
+            // Draw value (right-aligned, approximate width)
+            $valueWidth = strlen($value) * 8;
+            imagestring($image, $builtInFont, $width - $config['right_margin'] - $valueWidth, $y, $value, $colors[$config['value_color']]);
+            return;
+        }
         
         // Draw label (left)
         imagettftext(
