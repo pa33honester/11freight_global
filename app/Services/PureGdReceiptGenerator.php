@@ -97,11 +97,11 @@ class PureGdReceiptGenerator
     
     protected function saveImage($image, Receipt $receipt): string
     {
-        $filename = 'receipts_images/' . $receipt->receipt_number . '.png';
-        $outputPath = storage_path('app/public/' . $filename);
+        $directory = public_path('receipts_images');
+        $filename = $receipt->receipt_number . '.png';
+        $outputPath = $directory . '/' . $filename;
         
         // Ensure directory exists
-        $directory = dirname($outputPath);
         if (!is_dir($directory)) {
             if (!mkdir($directory, 0755, true)) {
                 Log::error('Failed to create receipt image directory', ['path' => $directory]);
@@ -115,7 +115,8 @@ class PureGdReceiptGenerator
             return '';
         }
         
-        return $filename;
+        Log::debug('Receipt image saved to public directory', ['path' => $outputPath, 'url_path' => '/receipts_images/' . $filename]);
+        return '/receipts_images/' . $filename;
     }
 
     protected function drawCompanyName($image, int $width, array $colors): void
